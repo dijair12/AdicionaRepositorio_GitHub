@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositórios Github</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+  <body>
+    <div class="container">
+      <div class="card-header">
+        <h3 class="card-title">Repositórios Github</h3>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <form autocomplete="off">
+            <div class="form-group">
+              <label for="repositorio">Repositório</label>
+              <input type="text" class="form-control" id="repositorio" placeholder="Repositório do Github" autofocus required>
+              <small id="repositorioHelp" class="form-text text-muted">Informe o repositorio para adicionar a lista</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Adicionar</button>
+          </form>
+        </div>
+        <ul class="list-group">
+          <!--Conteudo a ser adicionado-->
+        </ul>
+      </div>
+
+    </div>
+    <script src="bundle.js"></script>
+  </body>
+</html>
