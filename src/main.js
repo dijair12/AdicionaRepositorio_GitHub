@@ -32,72 +32,73 @@ class App {
         let {name, description, html_url, owner: { avatar_url } } = response.data;
 
         //Adiciona o repositorio na lista
-        this.repositorios.push({
-            nome: name,
-            descricao: description,
-            avatar_url,
-            link: html_url,
-        });
+        this.repositorios.push();
+        
 
-       this.renderizarTela();
+       this.addRepository({
+        nome: name,
+        descricao: description,
+        avatar_url,
+        link: html_url,
+        });
 
     }
 
-    renderizarTela() {
+    addRepository(repositorio) {
         //Limpar o conteudo de lista
-        this.lista.innerHTML = '';
-
+        //this.lista.innerHTML = '';
+        
         // Percorrer toda a lista de repositorios e cria os elementos
-        this.repositorios.forEach(repositorio =>{
-
+        //this.repositorios.forEach(repositorio =>{
+            
             //<li>
             let li = document.createElement('li');
             li.setAttribute('class', 'list-group-item list-group-item-action');
-        
+            
             let img = document.createElement('img');
             img.setAttribute('src', repositorio.avatar_url);
             li.appendChild(img);
-
+            
             let strong = document.createElement('strong');
             let txtNome = document.createTextNode(repositorio.nome);
             strong.appendChild(txtNome);
             li.appendChild(strong);
-
+            
             let p = document.createElement('p');
             let txtDescricao = document.createTextNode(repositorio.descricao);
             p.appendChild(txtDescricao);
             li.appendChild(p);
-
+            
             let a = document.createElement('a');
             a.setAttribute('target', 'blank');
             a.setAttribute('href', repositorio.link);
             let txtA = document.createTextNode('Acessar');
             a.appendChild(txtA);
             li.appendChild(a);
-
-            /* this.repositorios.onclick = () => {
-                //this.deleteRepository(this.repositorios);
-            } */
-            console.log(this.repositorios);
+           
+            li.onclick = () => {
+                this.deleteRepository(li);    
+            }
 
             this.lista.appendChild(li);
-
+    
             let inputRepositorio = this.formulario.querySelector('input[id=repositorio]');
 
             inputRepositorio.value = '';
 
             //Adiciona o foco no input
             inputRepositorio.focus();
-        });
-
+        //});
         
     }
 
     deleteRepository(repository) {
-        this.repositorios.splice(this.repositorios.indexOf(repository.textContent), 1);
+        //this.repositorios.splice(this.repositorios.indexOf(repository.textContent),1);
+        //console.log(this.repositorios.indexOf(repository.textContent));
+        repository.remove();
 
-        this.renderizarTela();
     }
+
 }
 
 new App();
