@@ -2,7 +2,7 @@ import api from './api';
 
 class App {
     constructor() {
-        this.repositorios = [];
+        this.repositorios = []; //JSON.parse(localStorage.getItem('repositorios') || []);
 
         this.formulario = document.querySelector('form');
 
@@ -31,16 +31,21 @@ class App {
 
         let {name, description, html_url, owner: { avatar_url } } = response.data;
 
-        //Adiciona o repositorio na lista
-        this.repositorios.push();
-        
+        let dateRepository = {
+            nome: name,
+            descricao: description,
+            avatar_url,
+            link: html_url,
+        }
 
-       this.addRepository({
-        nome: name,
-        descricao: description,
-        avatar_url,
-        link: html_url,
+        //Adiciona o repositorio na lista
+        this.repositorios.push({
+            dateRepository,
         });
+
+        this.salveDataToStorage(); 
+
+        this.addRepository(dateRepository);
 
     }
 
@@ -97,6 +102,10 @@ class App {
         //console.log(this.repositorios.indexOf(repository.textContent));
         repository.remove();
 
+    }
+
+    salveDataToStorage() {
+        localStorage.setItem('repositorios', JSON.stringify(this.repositorios));
     }
 
 }
