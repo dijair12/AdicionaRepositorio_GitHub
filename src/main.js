@@ -12,96 +12,156 @@ class App {
     }
 
     registrarEventos() {
-       this.formulario.onsubmit = evento => this.adicionarRepositorio(evento); 
-    }
+        
+        let btn = document.querySelector('button[id=botao]');
+        
+        btn.onclick = () => {
 
+            let input = this.formulario.querySelector('input[id=repositorio]').value;
+            
+            if(input !== ''){
+                this.removeSpans();
+ 
+                this.formulario.onsubmit = (evento) => this.adicionarRepositorio(evento);
+            } else {
+                this.removeSpans();
+                
+                let span = document.createElement('span');
+                span.setAttribute('class', 'alert alert-danger');
+                span.setAttribute('id', 'alert');
+                
+                let msg = document.createTextNode('Insira algum repositório');
+                
+                span.appendChild(msg);
+                
+                this.lista.appendChild(span);
+                console.log(this.lista)
+            }
+        }
+        
+    }
+    
     async adicionarRepositorio(evento) {
         // Evita que o formulario recarregue a página
         evento.preventDefault();
-
+        
         //Recuperar o valor do input
         let input = this.formulario.querySelector('input[id=repositorio]').value;
+        
+        this.searchRepository();
+        
+        try {
+            let response = await api.get(`/repos/${input}`);
+        
+            let {name, description, html_url, owner: { avatar_url } } = response.data;
+            
+            let dateRepository = {
+                nome: name,
+                descricao: description,
+                avatar_url,
+                link: html_url,
+            }
 
-        //Se o input vier vazio... sai da app
-        if(input.length === 0) {
-            return; //sempre sai da aplicação
+            //Adiciona o repositorio na lista
+            this.repositorios.push({
+                dateRepository,
+            });
+
+            this.lista.removeChild(document.querySelector('.alert-warning'));
+
+            this.salveDataToStorage(); 
+
+            this.addRepository(dateRepository);
+            
+
+        } catch(error) {
+            this.lista.removeChild(document.querySelector('.alert-warning'));
+
+            let er = this.lista.querySelector('alert alert-danger');
+            if(er !== null){
+                this.lista.removeChild(er);
+            }
+
+            let span = document.createElement('span');
+            span.setAttribute('class', 'alert alert-danger');
+            span.setAttribute('id', 'alert');
+
+            let msg = document.createTextNode('O repositório não foi encontrado');
+
+            span.appendChild(msg);
+
+            this.lista.appendChild(span);
         }
+    }
 
-        let response = await api.get(`/repos/${input}`);
+    searchRepository() {
 
-        let {name, description, html_url, owner: { avatar_url } } = response.data;
+        this.removeSpans();
 
-        let dateRepository = {
-            nome: name,
-            descricao: description,
-            avatar_url,
-            link: html_url,
-        }
+        let span = document.createElement('span');
+        span.setAttribute('class', 'alert alert-warning');
+        span.setAttribute('id', 'alert');
 
-        //Adiciona o repositorio na lista
-        this.repositorios.push({
-            dateRepository,
-        });
+        let msg = document.createTextNode('Aguarde, estamos buscando');
 
-        this.salveDataToStorage(); 
+        span.appendChild(msg);
 
-        this.addRepository(dateRepository);
+        this.lista.appendChild(span);
 
     }
 
     addRepository(repositorio) {
-        //Limpar o conteudo de lista
-        //this.lista.innerHTML = '';
-        
-        // Percorrer toda a lista de repositorios e cria os elementos
-        //this.repositorios.forEach(repositorio =>{
-            
-            //<li>
-            let li = document.createElement('li');
-            li.setAttribute('class', 'list-group-item list-group-item-action');
-            
-            let img = document.createElement('img');
-            img.setAttribute('src', repositorio.avatar_url);
-            li.appendChild(img);
-            
-            let strong = document.createElement('strong');
-            let txtNome = document.createTextNode(repositorio.nome);
-            strong.appendChild(txtNome);
-            li.appendChild(strong);
-            
-            let p = document.createElement('p');
-            let txtDescricao = document.createTextNode(repositorio.descricao);
-            p.appendChild(txtDescricao);
-            li.appendChild(p);
-            
-            let a = document.createElement('a');
-            a.setAttribute('target', 'blank');
-            a.setAttribute('href', repositorio.link);
-            let txtA = document.createTextNode('Acessar');
-            a.appendChild(txtA);
-            li.appendChild(a);
-           
-            li.onclick = () => {
-                this.deleteRepository(li);    
-            }
 
-            this.lista.appendChild(li);
+        //<li>
+        let li = document.createElement('li');
+        li.setAttribute('class', 'list-group-item list-group-item-action');
+        
+        let img = document.createElement('img');
+        img.setAttribute('src', repositorio.avatar_url);
+        li.appendChild(img);
+        
+        let strong = document.createElement('strong');
+        let txtNome = document.createTextNode(repositorio.nome);
+        strong.appendChild(txtNome);
+        li.appendChild(strong);
+        
+        let p = document.createElement('p');
+        let txtDescricao = document.createTextNode(repositorio.descricao);
+        p.appendChild(txtDescricao);
+        li.appendChild(p);
+        
+        let a = document.createElement('a');
+        a.setAttribute('target', 'blank');
+        a.setAttribute('href', repositorio.link);
+        let txtA = document.createTextNode('Acessar');
+        a.appendChild(txtA);
+        li.appendChild(a);
+        
+        li.onclick = () => {
+            this.deleteRepository(li);    
+        }
+
+        this.lista.appendChild(li);
+
+        let inputRepositorio = this.formulario.querySelector('input[id=repositorio]');
+
+        inputRepositorio.value = '';
+
+        //Adiciona o foco no input
+        inputRepositorio.focus();
     
-            let inputRepositorio = this.formulario.querySelector('input[id=repositorio]');
+}
 
-            inputRepositorio.value = '';
+    removeSpans() {
+        let spans = document.querySelectorAll('span[id=alert]');
 
-            //Adiciona o foco no input
-            inputRepositorio.focus();
-        //});
-        
+        for(let i=0; i < spans.length; i++) {
+            this.lista.removeChild(spans[i]);
+        }
     }
 
     deleteRepository(repository) {
-        //this.repositorios.splice(this.repositorios.indexOf(repository.textContent),1);
-        //console.log(this.repositorios.indexOf(repository.textContent));
         repository.remove();
-
     }
 
     salveDataToStorage() {
